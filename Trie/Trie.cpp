@@ -4,7 +4,6 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -17,31 +16,31 @@ private:
 	Trie *kids[26];		//the array of nodes, 26 for each possible letter of the alphabet
 	Trie *newNode(string);		//creates a new node based off the given string from the insert function
 	int findDist(Trie*, Trie*);		//travese the list down to current keeping track of how many levels deep for how the length of x needed in newBranch
+	void insertWork(string, Trie*);		//does all the work for the insert function, finding the appropriate way to disperse the word given among the tree
+	void show(Trie*);	//called by the print function, cycles through the trie to show everything off
+	void newBranch(string, Trie*, int, int);	//places new parts of the string into the trie
+	Trie *root;		//the root of the trie
 
 public:
 	Trie();		//sets the root = nullptr to get the trie ready
 	void insert(string);	//inserts the given string into the parse tree
-	void insertWork(string, Trie*);		//does all the work for the insert function, finding the appropriate way to disperse the word given among the tree
-	void show(Trie*);	//called by the print function, cycles through the trie to show everything off
-	void print(); //calls show funtion
-	Trie *root; //the root of the trie
-	void newBranch(string, Trie*, int, int); //places new parts of the string into the trie
+	void print();	//calls show funtion
 };
 
+Trie::Trie() {
+	root = nullptr;
+}
+
 void Trie::newBranch(string x, Trie* temp, int index, int dist) {
-	string z = x.substr(0, dist);
-	if (temp->words != z) {
+	string z = x.substr(0, dist);	//adding one char at a time onto a new branch
+	if (temp->words != z) {		//if the word is already in the tree
 		temp->kids[index] = newNode(z);
 		if (temp->kids[index]->words == x)
 			temp->kids[index]->isTerminal = true;
 		if (temp->kids[index]->words.length() != x.length()) {
-			return newBranch(x, temp->kids[index], 0, dist + 1);
+			return newBranch(x, temp->kids[index], 0, dist + 1);	//add 1 to the string size for the next node
 		}	
 	}
-}
-
-Trie::Trie() {
-	root = nullptr;
 }
 
 int Trie::findDist(Trie* current, Trie* temp) {
@@ -69,15 +68,15 @@ void Trie::insertWork(string x, Trie *temp) {
 		newBranch(x, root, 0, 1);
 	}
 	else {
-		bool noMore = false;
+		bool noMore = false; //stops the for loop when index is updated
 		int index = -1; //index where array is now empty
 		for (int i = 0; i < 26; i++) {
 			if (temp->kids[i]) {
-				if (x.find(temp->kids[i]->words) != string::npos && temp->kids[i]->words[0] == x[0]) {
+				if (x.find(temp->kids[i]->words) != string::npos && temp->kids[i]->words[0] == x[0]) { //update to this node if it is a substring of x and starts with the same char
 					return insertWork(x, temp->kids[i]);
 				}
 			}
-			else if (noMore == false) {
+			else if (noMore == false) { //if the alphabet array is empty
 				index = i;
 				noMore = true;
 			}
@@ -126,6 +125,7 @@ int main()
 	tree.insert("cupcake");
 	tree.insert("chicken");
 	tree.insert("sheet");
+	tree.insert("sheets");
 	tree.insert("caterpillar");
 	tree.insert("sleep");
 	tree.insert("rainbow");
