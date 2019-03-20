@@ -1,3 +1,5 @@
+//Fate Hardin
+//CSCI 490: Trie Prefix Tree Implementation
 #include "pch.h"
 #include <sstream>
 #include <iostream>
@@ -11,7 +13,7 @@ stringstream ss;
 class Trie {
 private:
 	string words;	//the string that the trie node contains
-	bool isTerminal;	//
+	bool isTerminal;	//set to true if the node's word is a terminal
 	Trie *kids[26];		//the array of nodes, 26 for each possible letter of the alphabet
 	Trie *newNode(string);		//creates a new node based off the given string from the insert function
 	int findDist(Trie*, Trie*);		//travese the list down to current keeping track of how many levels deep for how the length of x needed in newBranch
@@ -23,15 +25,18 @@ public:
 	void show(Trie*);	//called by the print function, cycles through the trie to show everything off
 	void print(); //calls show funtion
 	Trie *root; //the root of the trie
-	void newBranch(string, Trie*, int); //places new parts of the string into the trie
+	void newBranch(string, Trie*, int, int); //places new parts of the string into the trie
 };
 
-void Trie::newBranch(string x, Trie* temp, int index) {
-	string z = x.substr(0, findDist(temp, root));
-	cout << z << endl;
-	temp->kids[index] = newNode(z);
-	if (temp->kids[index]->words.length() != x.length()) {
-		return newBranch(x, temp->kids[index], 0);
+void Trie::newBranch(string x, Trie* temp, int index, int dist) {
+	string z = x.substr(0, dist);
+	if (temp->words != z) {
+		temp->kids[index] = newNode(z);
+		if (temp->kids[index]->words == x)
+			temp->kids[index]->isTerminal = true;
+		if (temp->kids[index]->words.length() != x.length()) {
+			return newBranch(x, temp->kids[index], 0, dist + 1);
+		}	
 	}
 }
 
@@ -44,7 +49,7 @@ int Trie::findDist(Trie* current, Trie* temp) {
 		return 1;
 	for (int i = 0; i < 26; i++) {
 		if (temp->kids[i]) {
-			if (current->words.find(temp->kids[i]->words) != string::npos)
+			if (current->words.find(temp->kids[i]->words) != string::npos && current->words[0] == temp->kids[i]->words[0])
 				return 1 + findDist(current, temp->kids[i]);
 		}
 	}
@@ -61,14 +66,14 @@ void Trie::insertWork(string x, Trie *temp) {
 		ss << x[0];
 		ss >> z;
 		root = newNode("");
-		newBranch(x, root, 0);
+		newBranch(x, root, 0, 1);
 	}
 	else {
 		bool noMore = false;
 		int index = -1; //index where array is now empty
 		for (int i = 0; i < 26; i++) {
 			if (temp->kids[i]) {
-				if (x.find(temp->kids[i]->words) != string::npos) {
+				if (x.find(temp->kids[i]->words) != string::npos && temp->kids[i]->words[0] == x[0]) {
 					return insertWork(x, temp->kids[i]);
 				}
 			}
@@ -77,7 +82,7 @@ void Trie::insertWork(string x, Trie *temp) {
 				noMore = true;
 			}
 		}
-		newBranch(x, temp, index);
+		newBranch(x, temp, index, findDist(temp, root));
 	}
 }
 
@@ -92,7 +97,8 @@ void Trie::show(Trie* temp) {
 	if (!temp)
 		return;
 	else {
-		cout << "===================" << endl;
+		if (temp->isTerminal == true)
+			cout << "TERMINAL: ";
 		cout << temp->words + ": ";
 		for (int i = 0; i < 26; i++) {
 			if (temp->kids[i]) {
@@ -100,14 +106,15 @@ void Trie::show(Trie* temp) {
 			}
 		}
 		cout << endl;
-		//for (int i = 0; i < 26; i++) {
-		//	if (temp->kids[i])
-		//		show(temp->kids[i]);
-		//}
+		for (int i = 0; i < 26; i++) {
+			if (temp->kids[i])
+				show(temp->kids[i]);
+		}
 	}
 }
 
 void Trie::print() {
+	cout << "Parent Node: Children" << endl;
 	show(root);
 }
 
@@ -122,6 +129,11 @@ int main()
 	tree.insert("caterpillar");
 	tree.insert("sleep");
 	tree.insert("rainbow");
+	tree.insert("1010");
+	tree.insert("0000");
+	tree.insert("1010");
+	tree.insert("0101");
+	tree.insert("010101");
 	tree.print();
 	string stop;
 	cin >> stop;
