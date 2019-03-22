@@ -208,10 +208,10 @@ int main()
 	cout << "================" << endl;
 	cout << "Testing Search:" << endl;
 	cout << "================" << endl;
-	tree.search("cows");
-	tree.search("sleep");
-	tree.search("rain");
-	tree.search("");
+	cout << "cows: "; tree.search("cows");
+	cout << "sleep: "; tree.search("sleep");
+	cout << "rain: "; tree.search("rain");
+	cout << "Empty string: ";  tree.search(""); //root is empty string so it should not be considered part of the Trie
 
 	Trie tree2;
 	cout << "================" << endl;
@@ -226,9 +226,10 @@ int main()
 	cout << "================" << endl;
 	cout << "Creating a Trie from a sentence and replacing superstrings with given substrings in a list:" << endl;
 	cout << "================" << endl;
-	cout << "Original Sentence: the cattle was rattled by the battery" << endl;
+	string x = "the cattle was rattled by the battery";
+	cout << "Original Sentence: " << x << endl;
 	list<string> z; z.push_back("cat"); z.push_back("bat"); z.push_back("rat"); z.push_back("t");
-	printSent("the cattle was rattled by the battery", z);
+	printSent(x, z);
 	cout << "==========================" << endl;
 	string stop; //pls don't disapear oh mighty command window
 	cin >> stop;
