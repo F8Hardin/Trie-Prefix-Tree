@@ -15,7 +15,7 @@ class Trie {
 private:
 	string words;	//the string that the trie node contains
 	bool isTerminal;	//set to true if the node's word is a terminal
-	Trie *kids[26];		//the array of nodes, 26 for each possible letter of the alphabet
+	Trie *kids[26];	//the array of nodes, 26 for each possible letter of the alphabet
 	Trie *newNode(string);		//creates a new node based off the given string from the insert function
 	int findDist(Trie*, Trie*);		//travese the list down to current keeping track of how many levels deep for how the length of x needed in newBranch
 	void insertWork(string, Trie*);		//does all the work for the insert function, finding the appropriate way to disperse the word given among the tree
